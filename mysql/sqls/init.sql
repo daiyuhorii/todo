@@ -14,7 +14,7 @@ CREATE TABLE students (
   user_id CHAR(7) NOT NULL,
   password VARCHAR(255) NOT NULL,
   report_count INTEGER NOT NULL,
-  is_allowed_to_add_schedule NOT NULL,
+  is_allowed_to_add_schedule BOOLEAN NOT NULL,
   msg_from_admin TEXT,
   PRIMARY KEY (user_id)
 );
