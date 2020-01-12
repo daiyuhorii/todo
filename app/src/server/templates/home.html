@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    
+    <title>TODOリスト</title>
+  </head>
+  <body>
+    <div class="container">
+        <h2 class="bg-light mt-3 py-1">TODOリスト</h2>
+        <h3 id="user"></h3>
+        <form action="">
+            <div class="form-row">
+                </div>
+                <div class="form-group col-sm-9">
+                    <label for="inputTask" class="">Task</label>
+                    <input type="text" class="form-control" id="inputTask" placeholder="Add a task">
+                </div>
+                <div class="form-group col-sm-3">
+                    <label for="inputLimit" class="">Deadline</label>
+                    <input type="text" class="form-control" id="inputLimit" placeholder="MM/DD/YYYY">
+                </div>
+            </div>
+            <input type="button" id="btnAdd" class="btn btn-primary mb-3" value="Add">
+        </form>
+
+        <div class="alert alert-warning" role="alert" id="divAlert">
+            <span id="inputAlert"></span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover" id="todoList">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>ID</th>
+                        <th>Task</th>
+                        <th>Deadline</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- jQueryで作成する -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.js" 
+            integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+    <script src="{{url_for('static', filename='js/bootstrap-datepicker.min.js')}}"></script>
+    <script>
+        // 初期表示の時の処理
+    $(function(){
+        // 初期表示で警告表示領域を非表示にする
+        clearDivAlert();
+
+        // 期限のカレンダー表示を日本語にする
+        $('#inputLimit').datepicker({
+            language: 'ja'
+        });
+        var cookie = document.cookie;
+        var suffix = "Cookie:remember_token=".length;
+        var user_id = cookie.substring(suffix-7, suffix);
+        document.getElementById("user").innerHTML = "USER:" + user_id;
+        var input_id = document.getElementById("inputID");
+        $("#inputID").val(user_id)
+        
+        $.ajax({
+            type: "GET",
+            url: "http://localhost/task"
+        })
+        .done(function(data) {
+            data = data['items'];
+            for(task of data) {
+                $('#todoList').append(
+                '<tr><td><button type="button" class="btn btn-outline-danger btn-sm mx-0 btnDel" id="btnDel">OK</button></td>' 
+                + '<td id="task_id">' + task['task_id'] + '</td>'
+                + '<td>' + task['content'] + '</td>' 
+                + '<td>' + task['_limit'] + '</td></tr>');
+            }
+            console.log("GET: RECV");
+        })
+        .fail(function(jqXHR, textStatus, errorThrown) {
+            window.alert("Failed to receive data");
+            console.log(jqXHR);
+            console.log(textStatus);
+            console.log(errorThrown.message);
+            console.log(jqXHR);
+            console.log("FAILED");
+        })
+        .always(function(data) {
+            console.log(data);
+            console.log("ALWAYS");
+        })
+    });
+
+// 追加ボタンを押した時の処理
+$("#btnAdd").on("click", function(){
+    clearDivAlert();
+    // 入力チェック
+    if($('#inputTask').val().trim().length == 0){
+        $('#divAlert').css('display', 'block');
+        $('#inputAlert').text('タスク内容を入力してください');
+        return;
+    };
+
+    if($('#inputLimit').val().trim().length == 0){
+        $('#divAlert').css('display', 'block');
+        $('#inputAlert').text('期限を入力してください');
+        return;
+    };
+
+    // タスクと期限テキストの値を、表に追加する
+    var cookie = document.cookie;
+    var suffix = "Cookie:remember_token=".length;
+    var user_id = cookie.substring(suffix-7, suffix);
+    jsontxt = {"user_id": user_id,
+               "content": $('#inputTask').val().trim(),
+               "_limit": $('#inputLimit').val().trim()
+            }
+    jsondata = JSON.stringify(jsontxt)
+    console.log(jsondata)
+    $.ajax({
+        type: "POST",
+        url: "http://localhost/task",
+        data: jsondata,
+        contentType: "application/json",
+        //dataType: "text"
+    })
+    .done(function(data) {
+        data = data['items'];
+        console.log(data);
+        $('#todoList').append(
+        '<tr><td><button type="button" class="btn btn-outline-danger btn-sm mx-0 btnDel" id="btnDel">OK</button></td>' 
+        + '<td id="task_id">' + data['task_id'] + '</td>'
+        + '<td>' + data['content'] + '</td>' 
+        + '<td>' + data['_limit'] + '</td></tr>');
+        console.log("ADD: POSTED");
+    })
+    .fail(function(jqXHR, textStatus, errorThrown) {
+        window.alert("Failed to fetch data");
+        console.log(jqXHR);
+        console.log(textStatus);
+        console.log(errorThrown.message);
+        console.log(jqXHR);
+        console.log("FAILED");
+    })
+    .always(function(data) {
+        console.log(data);
+        console.log("EXCUTED");
+    })
+
+    // タスクと期限テキストをブランクにする
+    $('#inputTask').val('');
+    $('#inputLimit').val('');
+
+});
+
+// tableが動的な要素のため静的な親要素を入れている
+$(document).on("click", ".btnDel", function () {
+    jsondata = {
+        "task_id": $(this).closest('tr').children("#task_id").text(),
+    }
+    $.ajax({
+        type: "DELETE",
+        url: "http://localhost/task",
+        data: JSON.stringify(jsondata),
+        contentType: "application/json",
+        //dataType: "text"
+    })
+    .done(function(data) {
+        data = data['items'];
+        console.log(data);
+        $(this).closest("tr").remove();
+        console.log("DEL: POSTED");
+    })
+    .fail(function(jqXHR, textStatus, errorThrown) {
+        window.alert("Failed to fetch data");
+        console.log(jqXHR);
+        console.log(textStatus);
+        console.log(errorThrown.message);
+        console.log(jqXHR);
+        console.log("FAILED");
+    })
+    .always(function(data) {
+        console.log(data);
+        console.log("EXCUTED");
+    })
+    // 反映できたらけす↓
+    $(this).closest("tr").remove();
+    clearDivAlert();
+});
+
+// 警告部の初期化
+function clearDivAlert(){
+    $('#divAlert').css('display', 'none');
+    $('#inputAlert').text('');
+}
+    </script>    
+</body>
+</html>
