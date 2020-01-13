@@ -44,16 +44,25 @@ class TaskAPI(Resource):
     
     def delete(self):
         if request.headers['Content-Type'] != 'application/json':
-            return jsonify({'error': 'not a json type'}), 400
+            return jsonify({'error': 'not json type'}), 400
         
         req = request.get_json()
         print("\n============data============\n", req, "\n============================\n")
         task_id = req['task_id']
         task_id = int(task_id)
-        
+        user_id = req['user_id']
+        target_task = db.session.query(Task).filter(Task.task_id==task_id).first()
+        target_task = TaskSchema().dumps(target_task)
+        target_task = json.loads(target_task)
+        print("\n========target task=======\n",target_task, "\n========target task=======\n")
+        print(target_task['user_id'], user_id)
+        if target_task['user_id'] != user_id:
+            print("\nDELETE request from invalid user\n")
+            return Response(response="Not authorized", status=400)
+
         db.session.query(Task).filter(Task.task_id == task_id).delete()
         db.session.commit()
-        result = db.session.query(Task).filter(Task.task_id == task_id-1).all()
+        result = db.session.query(Task).all()
         result = TaskSchema(many=True).dump(result)
         data = jsonify({'items': result})
         return data
