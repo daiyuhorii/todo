@@ -78,7 +78,7 @@
         
         $.ajax({
             type: "GET",
-            url: "http://localhost/task"
+            url: "http://118.27.27.50/task"
         })
         .done(function(data) {
             data = data['items'];
@@ -133,7 +133,7 @@ $("#btnAdd").on("click", function(){
     console.log(jsondata)
     $.ajax({
         type: "POST",
-        url: "http://localhost/task",
+        url: "http://118.27.27.50/task",
         data: jsondata,
         contentType: "application/json",
         //dataType: "text"
@@ -174,7 +174,7 @@ $(document).on("click", ".btnDel", function () {
     }
     $.ajax({
         type: "DELETE",
-        url: "http://localhost/task",
+        url: "http://118.27.27.50/task",
         data: JSON.stringify(jsondata),
         contentType: "application/json",
         //dataType: "text"
