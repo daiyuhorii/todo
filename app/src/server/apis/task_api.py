@@ -58,7 +58,7 @@ class TaskAPI(Resource):
         print(target_task['user_id'], user_id)
         if target_task['user_id'] != user_id:
             print("\nDELETE request from invalid user\n")
-            return Response(response="Not authorized", status=400)
+            return Response(status=400)
 
         db.session.query(Task).filter(Task.task_id == task_id).delete()
         db.session.commit()
