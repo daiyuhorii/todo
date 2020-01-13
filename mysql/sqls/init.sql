@@ -19,11 +19,6 @@ CREATE TABLE students (
   PRIMARY KEY (user_id)
 );
 
-INSERT INTO students(user_id, password, report_count, is_allowed_to_add_schedule, msg_from_admin) values("17fi023", "17fi023", 0, 0, "");
-INSERT INTO students(user_id, password, report_count, is_allowed_to_add_schedule, msg_from_admin) values("17fi084", "17fi084", 0, 0, "");
-INSERT INTO students(user_id, password, report_count, is_allowed_to_add_schedule, msg_from_admin) values("17fi088", "17fi088", 0, 0, "");
-INSERT INTO students(user_id, password, report_count, is_allowed_to_add_schedule, msg_from_admin) values("17fi102", "17fi102", 0, 0, "");
-
 INSERT INTO tasks(user_id, content, _limit) values("17fi023", "complete the documents", "01/14/2020");
 INSERT INTO tasks(user_id, content, _limit) values("17fi084", "deploy this program on vps server", "01/14/2020");
 INSERT INTO tasks(user_id, content, _limit) values("17fi088", "write codes to make the program", "01/14/2020");
