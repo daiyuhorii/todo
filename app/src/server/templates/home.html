@@ -184,17 +184,6 @@ $(document).on("click", ".btnDel", function () {
     })
     .done(function(data) {
         console.log("DEL: POSTED");
-    })	
-    .fail(function(jqXHR, textStatus, errorThrown) {
-        console.log(jqXHR);
-        console.log(textStatus);
-        console.log(errorThrown.message);
-        console.log(jqXHR);
-        console.log("FAILED");
-        alert('you can\'t delete others\' tasks!');
-    })
-    .always(function(data) {
-        console.log(data);
         $(".btnDel").closest("tr").remove();
         clearDivAlert();
         for(task of data['items']) {
@@ -204,6 +193,11 @@ $(document).on("click", ".btnDel", function () {
         + '<td>' + task['content'] + '</td>' 
         + '<td>' + task['_limit'] + '</td></tr>');
         }
+    })	
+    .fail(function(data) {
+        console.log("FAILED");
+        console.log(data);
+        alert('you can\'t delete others\' tasks!');
     })
 });
 
